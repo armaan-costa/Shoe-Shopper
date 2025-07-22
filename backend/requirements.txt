@@ -6,7 +6,7 @@ numpy
 opencv-python
 dj-database-url
 psycopg2-binary
-gunicorn
+gunicorn>=21.2.0
 whitenoise
 python-dotenv
 inference-sdk==0.51.4
