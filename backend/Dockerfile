@@ -28,8 +28,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+# Create staticfiles directory
+RUN mkdir -p /app/staticfiles
+
 # Expose the port
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
