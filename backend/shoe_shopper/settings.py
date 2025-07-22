@@ -26,8 +26,8 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 IS_RAILWAY = 'RAILWAY_ENVIRONMENT' in os.environ or '.up.railway.app' in os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
 
 # Get current Railway domains
-BACKEND_URL = 'handsome-enjoyment-development.up.railway.app'
-FRONTEND_URL = 'dynamic-commitment-production.up.railway.app'
+BACKEND_URL = 'shoe-shopper-production-c0f3.up.railway.app'
+FRONTEND_URL = 'shoeshopperdemo.up.railway.app'
 
 if IS_RAILWAY or BACKEND_URL in os.environ.get('RAILWAY_PUBLIC_DOMAIN', ''):
     # Production settings
