@@ -45,7 +45,8 @@ if IS_RAILWAY or BACKEND_URL in os.environ.get('RAILWAY_PUBLIC_DOMAIN', ''):
         f'https://{FRONTEND_URL}',
     ]
     CORS_ALLOWED_ORIGINS = [
-        f'https://{FRONTEND_URL}',  
+        f'https://{FRONTEND_URL}'
+        'https://shoeshopperdemo.up.railway.app',  
     ]
     CORS_ALLOW_CREDENTIALS = True
 else:
