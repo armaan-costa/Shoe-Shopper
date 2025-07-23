@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Upload, Camera, Ruler, ShoppingBag, User, LogOut, ChevronDown, AlertCircle, Filter } from "lucide-react"
+import { Upload, Camera, Ruler, User, LogOut, ChevronDown, AlertCircle, Filter } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
@@ -47,13 +47,6 @@ interface MeasurementResult {
   status: "processing" | "complete" | "error"
 }
 
-interface UserPreferences {
-  gender: string[]
-  brand: string[]
-  function: string[]
-  maxPrice: number
-}
-
 export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState<AppUser | null>(null)
@@ -66,10 +59,10 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
 
-  const [filters, setFilters] = useState<UserPreferences>({
-    gender: [],
-    brand: [],
-    function: [],
+  const [filters, setFilters] = useState({
+    gender: [] as string[],
+    brand: [] as string[],
+    function: [] as string[],
     maxPrice: 1000,
   })
 
@@ -79,31 +72,6 @@ export default function Dashboard() {
   useEffect(() => {
     checkAuth()
   }, [])
-
-  // Load saved preferences on component mount
-  useEffect(() => {
-    loadSavedPreferences()
-  }, [])
-
-  const loadSavedPreferences = () => {
-    try {
-      const savedPreferences = localStorage.getItem("userPreferences")
-      if (savedPreferences) {
-        const preferences = JSON.parse(savedPreferences)
-        setFilters(preferences)
-      }
-    } catch (error) {
-      console.error("Error loading saved preferences:", error)
-    }
-  }
-
-  const savePreferences = (newFilters: UserPreferences) => {
-    try {
-      localStorage.setItem("userPreferences", JSON.stringify(newFilters))
-    } catch (error) {
-      console.error("Error saving preferences:", error)
-    }
-  }
 
   const checkAuth = async () => {
     const token = localStorage.getItem("token")
@@ -278,7 +246,6 @@ export default function Dashboard() {
 
     await poll()
   }
-
   // Get user initials for avatar
   const getUserInitials = () => {
     if (!user) return "U"
@@ -304,52 +271,24 @@ export default function Dashboard() {
     setUploadProgress(0)
   }
 
-  const handleFilterChange = (category: keyof UserPreferences, value: string) => {
-    if (category === "maxPrice") return // Handle price separately
-
-    const newFilters = {
-      ...filters,
-      [category]: (filters[category] as string[]).includes(value)
-        ? (filters[category] as string[]).filter((item) => item !== value)
-        : [...(filters[category] as string[]), value],
-    }
-    setFilters(newFilters)
-    savePreferences(newFilters)
+  const handleFilterChange = (category: "gender" | "brand" | "function", value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [category]: prev[category].includes(value)
+        ? prev[category].filter((item) => item !== value)
+        : [...prev[category], value],
+    }))
   }
 
-  const handlePriceChange = (price: number) => {
-    const newFilters = { ...filters, maxPrice: price }
-    setFilters(newFilters)
-    savePreferences(newFilters)
+  const handleSelectAll = (category: "gender" | "brand" | "function", options: string[]) => {
+    setFilters((prev) => ({
+      ...prev,
+      [category]: prev[category].length === options.length ? [] : [...options],
+    }))
   }
 
-  const handleSelectAll = (category: keyof UserPreferences, options: string[]) => {
-    if (category === "maxPrice") return // Handle price separately
-
-    const currentArray = filters[category] as string[]
-    const newFilters = {
-      ...filters,
-      [category]: currentArray.length === options.length ? [] : [...options],
-    }
-    setFilters(newFilters)
-    savePreferences(newFilters)
-  }
-
-  const isAllSelected = (category: keyof UserPreferences, options: string[]) => {
-    if (category === "maxPrice") return false
-    return (filters[category] as string[]).length === options.length
-  }
-
-  const clearAllFilters = () => {
-    const newFilters = { gender: [], brand: [], function: [], maxPrice: 1000 }
-    setFilters(newFilters)
-    savePreferences(newFilters)
-  }
-
-  const navigateToRecommendations = () => {
-    // Save current preferences before navigating
-    savePreferences(filters)
-    router.push("/recommendations")
+  const isAllSelected = (category: "gender" | "brand" | "function", options: string[]) => {
+    return filters[category].length === options.length
   }
 
   if (isLoading) {
@@ -371,7 +310,7 @@ export default function Dashboard() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <ShoppingBag className="h-8 w-8 text-blue-600" />
+                <img src="/images/logo.svg" alt="Shoe Shopper Logo" className="h-8 w-8" />
                 <h1 className="text-xl font-bold text-gray-900">Shoe Shopper</h1>
               </div>
             </div>
@@ -541,7 +480,7 @@ export default function Dashboard() {
                         max="1000"
                         step="25"
                         value={filters.maxPrice}
-                        onChange={(e) => handlePriceChange(Number.parseInt(e.target.value))}
+                        onChange={(e) => setFilters((prev) => ({ ...prev, maxPrice: Number.parseInt(e.target.value) }))}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                       />
                       <div className="flex justify-between text-sm text-gray-500">
@@ -554,7 +493,7 @@ export default function Dashboard() {
 
                   {/* Clear Filters */}
                   <button
-                    onClick={clearAllFilters}
+                    onClick={() => setFilters({ gender: [], brand: [], function: [], maxPrice: 1000 })}
                     className="w-full text-sm text-gray-600 hover:text-gray-800 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                   >
                     Clear All Filters
@@ -659,7 +598,11 @@ export default function Dashboard() {
                             </div>
                           </div>
                           <button
-                            onClick={navigateToRecommendations}
+                            onClick={() => {
+                              // In a real app, this would navigate with the preferences
+                              // For now, we'll just navigate to recommendations
+                              router.push("/recommendations")
+                            }}
                             className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
                           >
                             View Shoe Recommendations

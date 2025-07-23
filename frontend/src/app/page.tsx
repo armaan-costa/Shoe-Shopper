@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { ShoppingBag, Ruler, Camera, Zap, Shield, Eye, EyeOff } from "lucide-react"
+import { Ruler, Camera, Zap, Shield, Eye, EyeOff, ShoppingBag } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 // API configuration
@@ -133,7 +133,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <ShoppingBag className="h-8 w-8 text-blue-600" />
+              <img src="/images/logo.svg" alt="Shoe Shopper Logo" className="h-8 w-8" />
               <h1 className="text-xl font-bold text-gray-900">Shoe Shopper</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -255,7 +255,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
-              <ShoppingBag className="h-6 w-6" />
+              <img src="/images/logo.svg" alt="Shoe Shopper Logo" className="h-6 w-6" />
               <span className="font-semibold">Shoe Shopper</span>
             </div>
           </div>

@@ -1,7 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
 import {
-  ShoppingBag,
   User,
   LogOut,
   ChevronDown,
@@ -17,7 +16,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { getCsrfToken } from "@/utils/getCsrfToken";
+import { getCsrfToken } from "@/utils/getCsrfToken"
 
 // API configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
@@ -90,29 +89,29 @@ export default function AccountPage() {
     }
   }
 
-const loadLatestMeasurement = async () => {
-  const token = localStorage.getItem("token")
-  if (!token) return
+  const loadLatestMeasurement = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) return
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/measurements/latest/`, {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    })
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/measurements/latest/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
 
-    if (response.ok) {
-      const data = await response.json()
-      setLatestMeasurement(data)
-    } else if (response.status === 404) {
-      setLatestMeasurement(null) // No measurement yet
-    } else {
-      console.error("Failed to load measurement:", await response.text())
+      if (response.ok) {
+        const data = await response.json()
+        setLatestMeasurement(data)
+      } else if (response.status === 404) {
+        setLatestMeasurement(null) // No measurement yet
+      } else {
+        console.error("Failed to load measurement:", await response.text())
+      }
+    } catch (err) {
+      console.error("Error fetching latest measurement:", err)
     }
-  } catch (err) {
-    console.error("Error fetching latest measurement:", err)
   }
-}
 
   const handleLogout = async () => {
     const token = localStorage.getItem("token")
@@ -136,68 +135,65 @@ const loadLatestMeasurement = async () => {
     }
   }
 
-const handleDeleteAccount = async () => {
-  if (!user) return;
+  const handleDeleteAccount = async () => {
+    if (!user) return
 
-  if (deleteConfirmationText !== user.username) {
-    setError("Please type your username exactly as shown to confirm account deletion.");
-    return;
-  }
+    if (deleteConfirmationText !== user.username) {
+      setError("Please type your username exactly as shown to confirm account deletion.")
+      return
+    }
 
-  if (!deletePassword.trim()) {
-    setError("Please enter your password to confirm account deletion.");
-    return;
-  }
+    if (!deletePassword.trim()) {
+      setError("Please enter your password to confirm account deletion.")
+      return
+    }
 
-  setIsDeletingAccount(true);
-  setError(null);
-  setSuccess(null); // Add this if `success` is part of state
+    setIsDeletingAccount(true)
+    setError(null)
+    setSuccess(null) // Add this if `success` is part of state
 
-  try {
-    const csrfToken = await getCsrfToken();
-
-    const res = await fetch(`${API_BASE_URL}/api/auth/account/`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Token ${localStorage.getItem("token")}`,
-        "X-CSRFToken": csrfToken,
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        username: user.username,
-        password: deletePassword,
-      }),
-    });
-
-    let data;
     try {
-      data = await res.json();
-    } catch (parseError) {
-      console.error("Failed to parse JSON:", parseError);
-      throw new Error("Invalid JSON in response");
-    }
+      const csrfToken = await getCsrfToken()
 
-    if (!res.ok) {
-      setError(data.error || "Failed to delete account. Please try again.");
-    } else {
-      setSuccess("Account deleted successfully.");
-      localStorage.removeItem("token");
+      const res = await fetch(`${API_BASE_URL}/api/auth/account/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("token")}`,
+          "X-CSRFToken": csrfToken,
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          username: user.username,
+          password: deletePassword,
+        }),
+      })
 
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
+      let data
+      try {
+        data = await res.json()
+      } catch (parseError) {
+        console.error("Failed to parse JSON:", parseError)
+        throw new Error("Invalid JSON in response")
+      }
+
+      if (!res.ok) {
+        setError(data.error || "Failed to delete account. Please try again.")
+      } else {
+        setSuccess("Account deleted successfully.")
+        localStorage.removeItem("token")
+
+        setTimeout(() => {
+          router.push("/")
+        }, 2000)
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err)
+      setError("Something went wrong. Try again.")
+    } finally {
+      setIsDeletingAccount(false)
     }
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    setError("Something went wrong. Try again.");
-  } finally {
-    setIsDeletingAccount(false);
   }
-};
-
-
-
 
   const resetDeleteConfirmation = () => {
     setShowDeleteConfirmation(false)
@@ -247,8 +243,8 @@ const handleDeleteAccount = async () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">/
-                <ShoppingBag className="h-8 w-8 text-blue-600" />
+              <div className="flex items-center space-x-2">
+                <img src="/images/logo.svg" alt="Shoe Shopper Logo" className="h-8 w-8" />
                 <h1 className="text-xl font-bold text-gray-900">Shoe Shopper</h1>
               </div>
             </div>
@@ -439,10 +435,10 @@ const handleDeleteAccount = async () => {
             )}
 
             {success && (
-  <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
-    {success}
-  </div>
-)}
+              <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
+                {success}
+              </div>
+            )}
 
             <div className="space-y-4">
               <div>
